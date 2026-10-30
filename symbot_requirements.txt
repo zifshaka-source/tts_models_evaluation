@@ -1,5 +1,0 @@
-pygetwindow
-pyperclip
-Pillow
-torch
-whisper-openai
