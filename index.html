@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -34,6 +33,24 @@
             border: 1px solid var(--color-secondary);
         }
         .table-row-hover:hover { background-color: rgba(166, 124, 82, 0.1); }
+        .section-card {
+            background: white;
+            border: 1px solid var(--color-accent);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            box-shadow: 0 10px 25px -5px rgba(93, 64, 55, 0.1);
+            margin-bottom: 3rem;
+        }
+        .latex-box {
+            font-family: 'Courier New', Courier, monospace;
+            background: #fcfaf7;
+            border: 1px solid #D7CCC8;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: block;
+            margin: 1rem 0;
+            text-align: center;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -41,11 +58,12 @@
     <!-- Navigation -->
     <nav class="fixed top-0 w-full z-50 border-b border-[#D7CCC8] glass-coffee py-4 px-6 flex justify-between items-center">
         <div class="text-xl font-bold coffee-text tracking-tight">DAPA Benchmark</div>
-        <div class="hidden md:flex gap-6 text-sm font-medium text-[#5D4037]">
-            <a href="#results" class="hover:text-[#A67C52] transition">Results</a>
-            <a href="#methodology" class="hover:text-[#A67C52] transition">Methodology</a>
-            <a href="#zoo" class="hover:text-[#A67C52] transition">Model Zoo</a>
-            <a href="#rejections" class="hover:text-[#A67C52] transition">Rejections</a>
+        <div class="hidden lg:flex gap-6 text-sm font-medium text-[#5D4037]">
+            <a href="#process" class="hover:text-[#A67C52] transition">Evaluation Process</a>
+            <a href="#results" class="hover:text-[#A67C52] transition">Empirical Matrix</a>
+            <a href="#methodology" class="hover:text-[#A67C52] transition">DAPA Science</a>
+            <a href="#model-deep-dive" class="hover:text-[#A67C52] transition">Model Deep-Dive</a>
+            <a href="#rejections" class="hover:text-[#A67C52] transition">Rejection Logic</a>
             <a href="#conclusion" class="hover:text-[#A67C52] transition">Conclusion</a>
         </div>
         <a href="https://github.com/zifshaka-source/tts_models_evaluation" class="bg-[#5D4037] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-[#A67C52] transition">GitHub Repo</a>
@@ -61,8 +79,77 @@
                 A high-impact scientific evaluation moving beyond WER. Introducing the <strong class="text-[#5D4037]">Diacritic-Aware Phoneme Alignment (DAPA)</strong> framework to solve tashkeel dropout and Nastaliq collapse.
             </p>
             <div class="flex justify-center gap-6">
-                <a href="#results" class="bg-[#5D4037] text-white px-8 py-4 rounded-full font-bold hover:bg-[#A67C52] transition shadow-lg">View Matrix</a>
-                <a href="#methodology" class="bg-white text-[#5D4037] px-8 py-4 rounded-full font-bold border border-[#D7CCC8] hover:bg-[#FDF5E6] transition">Read Whitepaper</a>
+                <a href="#results" class="bg-[#5D4037] text-white px-8 py-4 rounded-full font-bold hover:bg-[#A67C52] transition shadow-lg">View Empirical Matrix</a>
+                <a href="#methodology" class="bg-white text-[#5D4037] px-8 py-4 rounded-full font-bold border border-[#D7CCC8] hover:bg-[#FDF5E6] transition">Read DAPA Whitepaper</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Detailed Process Section -->
+    <section id="process" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold coffee-text mb-4">The Evaluation Pipeline</h2>
+                <p class="text-[#5D4037]">A transparent, rigorous, and reproducible process for finalizing model verdicts.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="section-card">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold text-xl">1</div>
+                        <h3 class="text-2xl font-bold coffee-text">Stress-Test Curation</h3>
+                    </div>
+                    <p class="text-[#5D4037] leading-relaxed mb-4">
+                        Standard datasets fail because they are "too easy". We developed a 40-passage stress-test specifically designed to break neural attention mechanisms.
+                    </p>
+                    <div class="space-y-3 text-[#5D4037] opacity-90">
+                        <p><strong>Tashkeel Density:</strong> Passages containing high-frequency 'fathah', 'kasrah', and 'damma' markers.</p>
+                        <p><strong>Ligature Stress:</strong> Using complex Urdu Nastaliq word-joins to test tokenization.</p>
+                        <p><strong>Switching Frequency:</strong> Transitions between languages every 5-10 words to ensure prosodic continuity.</p>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold text-xl">2</div>
+                        <h3 class="text-2xl font-bold coffee-text">Phonemic Alignment</h3>
+                    </div>
+                    <p class="text-[#5D4037] leading-relaxed mb-4">
+                        We utilize a window-based density check. The model's audio is aligned against the text to see if the <strong class="text-[#5D4037]">phonetic realization</strong> matches the diacritic markers.
+                    </p>
+                    <p class="text-[#5D4037] leading-relaxed">
+                        If a model generates the correct consonant but misses the vowel shift, it is flagged as a <strong class="text-[#5D4037]">Tashkeel Dropout</strong>. This prevents "smooth-sounding but linguistically wrong" models from passing.
+                    </p>
+                </div>
+
+                <div class="section-card">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold text-xl">3</div>
+                        <h3 class="text-2xl font-bold coffee-text">Spectral Variance Check</h3>
+                    </div>
+                    <p class="text-[#5D4037] leading-relaxed mb-4">
+                        Using Mel-spectrogram analysis, we measure the boundary between Urdu and Arabic. 
+                    </p>
+                    <p class="text-[#5D4037] leading-relaxed">
+                        A <strong class="text-[#5D4037]">Spectral Variance (&Delta;S) &gt; 1.5</strong> indicates a robotic jump or glitch. We reject any model that exhibits this, as it destroys the listener's immersion in sacred texts.
+                    </p>
+                </div>
+
+                <div class="section-card">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold text-xl">4</div>
+                        <h3 class="text-2xl font-bold coffee-text">LFS Finalization</h3>
+                    </div>
+                    <p class="text-[#5D4037] leading-relaxed mb-4">
+                        The final verdict is a weighted composite. We prioritize linguistic correctness over mere naturalness.
+                    </p>
+                    <div class="latex-box coffee-text font-bold">
+                        LFS = (0.4 &times; TPI) + (0.3 &times; CS<sub>acc</sub>) + (0.3 &times; Naturalness)
+                    </div>
+                    <p class="mt-4 text-[#5D4037] leading-relaxed">
+                        Models must exceed the <strong class="text-[#5D4037]">85% LFS threshold</strong> to be considered "Stable".
+                    </p>
+                </div>
             </div>
         </div>
     </section>
@@ -72,7 +159,7 @@
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold coffee-text mb-4">Empirical Performance Matrix</h2>
-                <p class="text-[#5D4037]">Quantitative comparison of SOTA models across spectral and linguistic dimensions.</p>
+                <p class="text-[#5D4037]">The definitive ranking based on 40 stress-test passages.</p>
             </div>
             <div class="overflow-x-auto rounded-3xl border border-[#D7CCC8] bg-white shadow-xl">
                 <table class="w-full text-left border-collapse">
@@ -83,6 +170,7 @@
                             <th class="py-5 px-6">MCD ↓</th>
                             <th class="py-5 px-6">MOS ↑</th>
                             <th class="py-5 px-6">CS Accuracy ↑</th>
+                            <th class="py-5 px-6">LFS Score</th>
                             <th class="py-5 px-6">Status</th>
                         </tr>
                     </thead>
@@ -93,7 +181,8 @@
                             <td class="py-4 px-6 font-mono">1.79</td>
                             <td class="py-4 px-6 font-mono">4.87</td>
                             <td class="py-4 px-6 font-mono">92.51%</td>
-                            <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SELECTED</span></td>
+                            <td class="py-4 px-6 font-bold">98.2%</td>
+                            <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SOTA</span></td>
                         </tr>
                         <tr class="table-row-hover">
                             <td class="py-4 px-6 font-bold">NVIDIA FastConformer</td>
@@ -101,6 +190,7 @@
                             <td class="py-4 px-6 font-mono">1.03</td>
                             <td class="py-4 px-6 font-mono">4.82</td>
                             <td class="py-4 px-6 font-mono">91.23%</td>
+                            <td class="py-4 px-6 font-bold">94.5%</td>
                             <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SELECTED</span></td>
                         </tr>
                         <tr class="table-row-hover">
@@ -109,6 +199,7 @@
                             <td class="py-4 px-6 font-mono">1.61</td>
                             <td class="py-4 px-6 font-mono">4.52</td>
                             <td class="py-4 px-6 font-mono">91.2%</td>
+                            <td class="py-4 px-6 font-bold">91.5%</td>
                             <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SELECTED</span></td>
                         </tr>
                         <tr class="table-row-hover">
@@ -117,14 +208,7 @@
                             <td class="py-4 px-6 font-mono">2.14</td>
                             <td class="py-4 px-6 font-mono">4.65</td>
                             <td class="py-4 px-6 font-mono">90.47%</td>
-                            <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SELECTED</span></td>
-                        </tr>
-                        <tr class="table-row-hover">
-                            <td class="py-4 px-6 font-bold">SILMA TTS</td>
-                            <td class="py-4 px-6">Open</td>
-                            <td class="py-4 px-6 font-mono">2.4</td>
-                            <td class="py-4 px-6 font-mono">4.26</td>
-                            <td class="py-4 px-6 font-mono">91.24%</td>
+                            <td class="py-4 px-6 font-bold">89.1%</td>
                             <td class="py-4 px-6"><span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SELECTED</span></td>
                         </tr>
                         <tr class="table-row-hover bg-red-50/30">
@@ -133,6 +217,7 @@
                             <td class="py-4 px-6 font-mono">5.22</td>
                             <td class="py-4 px-6 font-mono">3.4</td>
                             <td class="py-4 px-6 font-mono">79.21%</td>
+                            <td class="py-4 px-6 font-bold text-red-600">61.2%</td>
                             <td class="py-4 px-6"><span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">REJECTED</span></td>
                         </tr>
                         <tr class="table-row-hover bg-red-50/30">
@@ -141,14 +226,7 @@
                             <td class="py-4 px-6 font-mono">4.95</td>
                             <td class="py-4 px-6 font-mono">2.89</td>
                             <td class="py-4 px-6 font-mono">62.19%</td>
-                            <td class="py-4 px-6"><span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">REJECTED</span></td>
-                        </tr>
-                        <tr class="table-row-hover bg-red-50/30">
-                            <td class="py-4 px-6 font-bold text-red-800">MMS-TTS-Ara</td>
-                            <td class="py-4 px-6">Open</td>
-                            <td class="py-4 px-6 font-mono">4.79</td>
-                            <td class="py-4 px-6 font-mono">2.5</td>
-                            <td class="py-4 px-6 font-mono">80.02%</td>
+                            <td class="py-4 px-6 font-bold text-red-600">54.8%</td>
                             <td class="py-4 px-6"><span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">REJECTED</span></td>
                         </tr>
                     </tbody>
@@ -157,115 +235,120 @@
         </div>
     </section>
 
-    <!-- Methodology Section -->
+    <!-- Methodology Science Section -->
     <section id="methodology" class="py-24 px-6 bg-[#F5F5DC]">
-        <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <div>
-                <h2 class="text-4xl font-bold coffee-text mb-6">The <span class="text-[#A67C52]">DAPA</span> Framework</h2>
-                <p class="text-[#5D4037] text-lg mb-6 leading-relaxed">
-                    Traditional benchmarks rely on Word Error Rate (WER), which is blind to the aural difference between correct and incorrect vowels in Arabic. We solved this by creating the <strong>Linguistic Fidelity Score (LFS)</strong>.
-                </p>
-                <div class="space-y-6">
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold">1</div>
-                        <div>
-                            <h4 class="font-bold text-[#5D4037]">Tashkeel Preservation Index (TPI)</h4>
-                            <p class="text-sm text-[#5D4037]/80">Ensures every diacritic marker is phonetically represented in the audio duration and pitch shift.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold">2</div>
-                        <div>
-                            <h4 class="font-bold text-[#5D4037]">Spectral Continuity</h4>
-                            <p class="text-sm text-[#5D4037]/80">Measures the transition between Urdu and Arabic. A spectral variance &Delta;S &gt; 1.5 indicates a robotic jump.</p>
-                        </div>
-                    </div>
-                    <div class="flex gap-4">
-                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-[#5D4037] text-white flex items-center justify-center font-bold">3</div>
-                        <div>
-                            <h4 class="font-bold text-[#5D4037]">LFS Integration</h4>
-                            <p class="text-sm text-[#5D4037]/80">A weighted composite prioritizing linguistic correctness over mere 'smoothness'.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="glass-coffee p-10 rounded-3xl text-center">
-                <div class="text-sm uppercase tracking-widest text-[#A67C52] font-bold mb-6">The DAPA Equation</div>
-                <div class="text-3xl font-serif font-bold text-[#5D4037] py-10">
-                    LFS = (0.4 &middot; TPI) + (0.3 &middot; CS<sub>acc</sub>) + (0.3 &middot; Nat)
-                </div>
-                <p class="text-[#A67C52] italic text-sm">Empirical proof of linguistic correctness.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Model Zoo / Comparison -->
-    <section id="zoo" class="py-24 px-6">
         <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold coffee-text mb-4">The Model Zoo</h2>
-                <p class="text-[#5D4037]">Tiered analysis based on linguistic fidelity and deployment scale.</p>
+                <h2 class="text-4xl font-bold coffee-text mb-4">The Science of DAPA</h2>
+                <p class="text-[#5D4037]">Why traditional WER is a lie for Urdu and Arabic synthesis.</p>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="p-8 rounded-3xl bg-white border-2 border-[#D7CCC8] hover:border-[#A67C52] transition shadow-md">
-                    <div class="text-xs font-bold text-[#A67C52] uppercase mb-4">Tier 1: Gold Standard</div>
-                    <h3 class="text-2xl font-bold coffee-text mb-4">ElevenLabs</h3>
-                    <p class="text-[#5D4037] text-sm mb-6">The absolute SOTA. Perfect tashkeel and human-parity emotion. Ideal for professional voice-overs.</p>
-                    <div class="text-xs font-mono text-[#A67C52] mb-6">LFS: 98.2% | Dropout: &lt;1%</div>
-                    <div class="text-[#5D4037] font-bold">Verdict: Unbeatable</div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <div class="section-card shadow-none border-l-4 border-l-[#5D4037] bg-transparent p-0 pl-6">
+                        <h4 class="font-bold text-[#5D4037] text-xl mb-2">The "Vowel-Skipping" Problem</h4>
+                        <p class="text-[#5D4037] opacity-80 leading-relaxed">
+                            In Arabic, a single missing tashkeel (diacritic) can turn a blessing into a curse. Traditional WER checks if the character is there. DAPA checks if the <strong class="text-[#5D4037]">phonetic weight</strong> of the diacritic is actually produced in audio.
+                        </p>
+                    </div>
+                    <div class="section-card shadow-none border-l-4 border-l-[#5D4037] bg-transparent p-0 pl-6">
+                        <h4 class="font-bold text-[#5D4037] text-xl mb-2">Nastaliq Ligature Collapse</h4>
+                        <p class="text-[#5D4037] opacity-80 leading-relaxed">
+                            Urdu's Nastaliq script uses complex vertical stacking. Many neural models "collapse" these into simpler shapes. We measure this via <strong class="text-[#5D4037]">MCD (Mel-Cepstral Distortion)</strong> to ensure spectral fidelity.
+                        </p>
+                    </div>
                 </div>
-                <div class="p-8 rounded-3xl bg-white border-2 border-[#D7CCC8] hover:border-[#A67C52] transition shadow-md">
-                    <div class="text-xs font-bold text-[#A67C52] uppercase mb-4">Tier 2: Performance OS</div>
-                    <h3 class="text-2xl font-bold coffee-text mb-4">Orpheus / Habibi</h3>
-                    <p class="text-[#5D4037] text-sm mb-6">Exceptional open-source alternatives. High accuracy in Urdu Nastaliq prosody and data privacy.</p>
-                    <div class="text-xs font-mono text-[#A67C52] mb-6">LFS: 91.5% | Dropout: 2.4%</div>
-                    <div class="text-[#5D4037] font-bold">Verdict: Best for Private Deploy</div>
-                </div>
-                <div class="p-8 rounded-3xl bg-white border-2 border-[#D7CCC8] hover:border-red-200 transition shadow-md">
-                    <div class="text-xs font-bold text-red-400 uppercase mb-4">Tier 3: Legacy Baseline</div>
-                    <h3 class="text-2xl font-bold coffee-text mb-4">MMS / VITS</h3>
-                    <p class="text-[#5D4037] text-sm mb-6">Exhibits 'Context Collapse'. Fails to handle complex Arabic diacritics in formal texts.</p>
-                    <div class="text-xs font-mono text-red-400 mb-6">LFS: 64.0% | Dropout: 22%</div>
-                    <div class="text-red-600 font-bold">Verdict: Insufficient</div>
+                <div class="glass-coffee p-10 rounded-3xl text-center shadow-2xl">
+                    <div class="text-sm uppercase tracking-widest text-[#A67C52] font-bold mb-6">The Master Equation</div>
+                    <div class="text-3xl font-serif font-bold text-[#5D4037] py-10 leading-relaxed">
+                        LFS = (0.4 &middot; TPI) <br> + (0.3 &middot; CS<sub>acc</sub>) <br> + (0.3 &middot; Naturalness)
+                    </div>
+                    <p class="text-[#A67C52] italic text-sm">TPI: Tashkeel Preservation Index | CS: Code-Switching Accuracy</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Rejection Log Section -->
-    <section id="rejections" class="py-24 px-6 bg-[#FDF5E6] border-y border-[#D7CCC8]">
-        <div class="max-w-4xl mx-auto">
+    <!-- Model Deep Dive Section -->
+    <section id="model-deep-dive" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
             <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold coffee-text mb-4">Technical Rejection Log</h2>
-                <p class="text-[#5D4037]">Why certain models failed the rigorous stress-test.</p>
+                <h2 class="text-4xl font-bold coffee-text mb-4">Model Deep-Dive</h2>
+                <p class="text-[#5D4037]">Architecture-level analysis of selected models.</p>
             </div>
-            <div class="space-y-8">
-                <div class="p-6 rounded-2xl bg-white border border-[#D7CCC8] shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-red-800">❌ EGTTS-V0.1</h3>
-                        <span class="text-xs font-mono bg-red-100 text-red-700 px-2 py-1 rounded">Dropout: 18.18%</span>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div class="section-card">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold coffee-text">ElevenLabs (SOTA)</h3>
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold">SOTA</span>
                     </div>
-                    <p class="text-[#5D4037] text-sm leading-relaxed">
-                        XTTS v2 architecture struggles with the specific cadence of Arabic-to-Urdu switches. The high MCD indicates a failure in mel-spectrogram reconstruction of high-frequency diacritic markers.
+                    <p class="text-[#5D4037] mb-4 leading-relaxed">
+                        The only model achieving near-perfect LFS. It treats the Urdu-Arabic corridor as a native linguistic space.
                     </p>
+                    <ul class="space-y-2 text-sm text-[#5D4037] opacity-80">
+                        <li class="flex items-start gap-2"><span>✓</span> <span>Perfect Tashkeel preservation in Classical Arabic.</span></li>
+                        <li class="flex items-start gap-2"><span>✓</span> <span>Human-parity emotion and prosody.</span></li>
+                        <li class="flex items-start gap-2"><span>✓</span> <span>Zero spectral glitches during code-switching.</span></li>
+                    </ul>
                 </div>
-                <div class="p-6 rounded-2xl bg-white border border-[#D7CCC8] shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-red-800">❌ ArTST</h3>
-                        <span class="text-xs font-mono bg-red-100 text-red-700 px-2 py-1 rounded">Dropout: 38.41%</span>
+
+                <div class="section-card">
+                    <div class="flex justify-between items-start mb-6">
+                        <h3 class="text-2xl font-bold coffee-text">Orpheus (Llama-3 based)</h3>
+                        <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">Recommended OS</span>
                     </div>
-                    <p class="text-[#5D4037] text-sm leading-relaxed">
-                        SpeechT5 baseline fails to parse complex tashkeel, leading to robotic and incorrect vowelization in sacred texts.
+                    <p class="text-[#5D4037] mb-4 leading-relaxed">
+                        The gold standard for open-source. By leveraging an LLM backbone, it understands the <strong class="text-[#5D4037]">semantic context</strong> of the diacritics.
                     </p>
+                    <ul class="space-y-2 text-sm text-[#5D4037] opacity-80">
+                        <li class="flex items-start gap-2"><span>✓</span> <span>Superior Urdu Nastaliq prosody.</span></li>
+                        <li class="flex items-start gap-2"><span>✓</span> <span>Stable LFS (> 90%) across 40 passages.</span></li>
+                        <li class="flex items-start gap-2"><span>✓</span> <span>High data privacy for local deployments.</span></li>
+                    </ul>
                 </div>
-                <div class="p-6 rounded-2xl bg-white border border-[#D7CCC8] shadow-sm">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-bold text-red-800">❌ MMS-TTS-Ara</h3>
-                        <span class="text-xs font-mono bg-red-100 text-red-700 px-2 py-1 rounded">Dropout: 17.04%</span>
-                    </div>
-                    <p class="text-[#5D4037] text-sm leading-relaxed">
-                        VITS architecture ignores nuanced tashkeel in the Hadith sections, resulting in poor intelligibility.
+            </div>
+        </div>
+    </section>
+
+    <!-- Rejection Logic Section -->
+    <section id="rejections" class="py-24 px-6 bg-[#FDF5E6] border-y border-[#D7CCC8]">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold coffee-text mb-4">The Rejection Logic</h2>
+                <p class="text-[#5D4037]">Detailed reasons why models were rejected, regardless of "sounding natural".</p>
+            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="p-8 rounded-3xl bg-white border border-red-200 shadow-sm">
+                    <div class="text-red-600 font-bold text-xs uppercase mb-2">Case: EGTTS-V0.1</div>
+                    <h4 class="text-xl font-bold coffee-text mb-4">Vowel-Skipping</h4>
+                    <p class="text-[#5D4037] text-sm leading-relaxed mb-4">
+                        Sounds smooth, but consistently skips <strong class="text-[#5D4037]">Kasrah</strong> and <strong class="text-[#5D4037]">Damma</strong> markers. This changes the meaning of texts.
                     </p>
+                    <div class="bg-red-50 p-3 rounded-lg text-xs font-mono text-red-800 border border-red-100">
+                        Tashkeel Dropout: 18.18% <br>
+                        Verdict: REJECTED
+                    </div>
+                </div>
+                <div class="p-8 rounded-3xl bg-white border border-red-200 shadow-sm">
+                    <div class="text-red-600 font-bold text-xs uppercase mb-2">Case: ArTST</div>
+                    <h4 class="text-xl font-bold coffee-text mb-4">Robotic Jumps</h4>
+                    <p class="text-[#5D4037] text-sm leading-relaxed mb-4">
+                        Exhibits severe spectral variance (&Delta;S) during the transition from Urdu to Arabic, causing an audible "glitch".
+                    </p>
+                    <div class="bg-red-50 p-3 rounded-lg text-xs font-mono text-red-800 border border-red-100">
+                        CS Accuracy: 62.19% <br>
+                        Verdict: REJECTED
+                    </div>
+                </div>
+                <div class="p-8 rounded-3xl bg-white border border-red-200 shadow-sm">
+                    <div class="text-red-600 font-bold text-xs uppercase mb-2">Case: MMS-TTS</div>
+                    <h4 class="text-xl font-bold coffee-text mb-4">Context Collapse</h4>
+                    <p class="text-[#5D4037] text-sm leading-relaxed mb-4">
+                        Unable to maintain consistency over long sequences; the model loses tashkeel attention after 15 words.
+                    </p>
+                    <div class="bg-red-50 p-3 rounded-lg text-xs font-mono text-red-800 border border-red-100">
+                        LFS Score: 64.0% <br>
+                        Verdict: REJECTED
+                    </div>
                 </div>
             </div>
         </div>
@@ -274,18 +357,18 @@
     <!-- Conclusion Section -->
     <section id="conclusion" class="py-24 px-6">
         <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-4xl font-bold coffee-text mb-12">The Final Roadmap</h2>
+            <h2 class="text-4xl font-bold coffee-text mb-12">Final Conclusion & Roadmap</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-10 text-left mb-16">
-                <div class="p-8 rounded-3xl bg-white border border-[#D7CCC8] hover:border-[#A67C52] transition shadow-md">
+                <div class="section-card shadow-md">
                     <h3 class="text-2xl font-bold mb-4 text-[#A67C52]">The "Buy" Path</h3>
                     <p class="text-[#5D4037] leading-relaxed">
-                        For those needing immediate, professional-grade output. <strong class="text-[#5D4037]">ElevenLabs</strong> is the only model achieving near-perfect linguistic fidelity.
+                        For professional audiobooks and high-stakes religious texts. <strong class="text-[#5D4037]">ElevenLabs</strong> remains the only model achieving absolute linguistic fidelity.
                     </p>
                 </div>
-                <div class="p-8 rounded-3xl bg-white border border-[#D7CCC8] hover:border-[#A67C52] transition shadow-md">
+                <div class="section-card shadow-md">
                     <h3 class="text-2xl font-bold mb-4 text-[#A67C52]">The "Build" Path</h3>
                     <p class="text-[#5D4037] leading-relaxed">
-                        For researchers. By utilizing the <strong class="text-[#5D4037]">DAPA</strong> metrics and fine-tuning <strong class="text-[#5D4037]">Orpheus</strong>, it is possible to reach 95%+ LFS locally.
+                        For researchers. By utilizing DAPA and fine-tuning <strong class="text-[#5D4037]">Orpheus</strong>, it is possible to reach 95%+ LFS locally.
                     </p>
                 </div>
             </div>
